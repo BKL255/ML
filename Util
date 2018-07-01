@@ -1,0 +1,25 @@
+import numpy as np
+class DataUtil:
+        #定义一个方法使其能从文件中读取数据
+        #该方法接受5个参数 数据集的名字、数据集的路径、训练样本数、类别所在类、是否打乱数据
+    def get_dataset(name, path, train_num=None, tar_idx=None, shuffle=False):
+        x = []
+        #将编码设为UTF-8以便读入中文等特殊字符
+        with open(path, "r", encoding="gbk") as file:
+        #如果是气球数据集的话，直接依逗号分割数据即可
+            if "balloon" in name:
+                for sample in file:
+                     x.append(sample.strip().split(","))
+        #默认不打乱数据
+        if shuffle:
+             np.random.shuffle(x)
+         #默认类别在最后一列
+        tar_idx = -1 if tar_idx is None else tar_idx #三元表达式  格式为：为真时的结果 if 判定条件 else 为假时的结果
+        y = np.array([row.pop(tar_idx) for row in x]) #将数据集中的数据标签提取出来
+        x = np.asarray(x) #asarray()将输入数据转化为矩阵形式
+        #默认全都是训练数据
+        if train_num is None:
+             return x, y
+        #若传入了训练样本数，则依之将数据集切分为训练集和测试集
+        return ((x[:train_num], y[:train_num]), (x[train_num:], y[train_num:]) )
+
